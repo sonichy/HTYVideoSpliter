@@ -54,6 +54,7 @@ void MainWindow::on_action_open_triggered()
     if(!filename.isEmpty()){        
         player->setMedia(QUrl::fromLocalFile(filename));
         ui->statusBar->showMessage("打开 " + filename);
+        ui->sliderProgress->setStyleSheet("");
         ui->listWidget->clear();
     }
 }

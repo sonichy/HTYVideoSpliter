@@ -25,7 +25,7 @@ void Clip::on_pushButtonCut_clicked()
     // -acodec copy 音频编码不变
     // -vcodec copy  视频编码不变
     QString filenameNew = QFileInfo(filename).absolutePath() + "/" + QFileInfo(filename).baseName() + "_clip." + QFileInfo(filename).completeSuffix();
-    QString cmd = "ffmpeg -i " + filename + " -y -ss " + ui->timeEditStart->time().toString("hh:mm:ss") + " -to " + ui->timeEditEnd->time().toString("hh:mm:ss") + " -acodec copy -vcodec copy " + filenameNew;
+    QString cmd = "ffmpeg -i \"" + filename + "\" -y -ss " + ui->timeEditStart->time().toString("hh:mm:ss") + " -to " + ui->timeEditEnd->time().toString("hh:mm:ss") + " -acodec copy -vcodec copy \"" + filenameNew + "\"";
     qDebug() << cmd;
     process = new QProcess;
     process->start(cmd);
