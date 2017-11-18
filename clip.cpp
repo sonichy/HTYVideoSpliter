@@ -7,7 +7,9 @@ Clip::Clip(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Clip)
 {
-    ui->setupUi(this);    
+    ui->setupUi(this);
+    connect(ui->timeEditStart,SIGNAL(timeChanged(QTime)),this,SLOT(timeChange()));
+    connect(ui->timeEditEnd,SIGNAL(timeChanged(QTime)),this,SLOT(timeChange()));
 }
 
 Clip::~Clip()
@@ -17,14 +19,7 @@ Clip::~Clip()
 
 void Clip::on_pushButtonCut_clicked()
 {
-    // ffmpeg -i E:\B\1.flv -y -ss 00:30:00 -t 01:00:00 -acodec copy -vcodec copy E:\B\1_2.flv
-    // -y 覆盖操作
-    // -ss 起始时间
-    // -t 时长
-    // -to 结束时间，于-t单独用
-    // -acodec copy 音频编码不变
-    // -vcodec copy  视频编码不变
-    QString filenameNew = QFileInfo(filename).absolutePath() + "/" + QFileInfo(filename).baseName() + "_clip." + QFileInfo(filename).completeSuffix();
+    QString filenameNew = QFileInfo(filename).absolutePath() + "/" + QFileInfo(filename).baseName() + "_" + clipname + "." + QFileInfo(filename).completeSuffix();
     QString cmd = "ffmpeg -i \"" + filename + "\" -y -ss " + ui->timeEditStart->time().toString("hh:mm:ss") + " -to " + ui->timeEditEnd->time().toString("hh:mm:ss") + " -acodec copy -vcodec copy \"" + filenameNew + "\"";
     qDebug() << cmd;
     process = new QProcess;
@@ -46,4 +41,14 @@ void Clip::processOutput()
 {
     qDebug() << process->readAllStandardOutput();
     ui->progressBar->setToolTip(QString(process->readAllStandardOutput()));
+}
+
+void Clip::timeChange()
+{
+    int start = ui->timeEditStart->time().msecsSinceStartOfDay();
+    int end = ui->timeEditEnd->time().msecsSinceStartOfDay();
+    QTime t(0,0,0);
+    t = t.addMSecs(end-start);
+    ui->timeEditDuration->setTime(t);
+    emit areaChange(start, end);
 }

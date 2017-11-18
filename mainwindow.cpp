@@ -15,7 +15,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     filename = "";
     ui->setupUi(this);
-    move((QApplication::desktop()->width() - width())/2, (QApplication::desktop()->height() - height())/2);    
+    move((QApplication::desktop()->width() - width())/2, (QApplication::desktop()->height() - height())/2);
+    ui->action_open->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
+    ui->action_quit->setIcon(style()->standardIcon(QStyle::SP_DialogCloseButton));
     ui->pushButtonPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));    
     ui->pushButtonStart->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
     ui->pushButtonEnd->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
@@ -78,23 +80,19 @@ void MainWindow::on_pushButtonPlay_clicked()
 void MainWindow::on_pushButtonStart_clicked()
 {
     pStart = ui->sliderProgress->value();
-    float p1 = (float)pStart/ui->sliderProgress->maximum();
-    float p2 = (float)pEnd/ui->sliderProgress->maximum();
-    ui->sliderProgress->setStyleSheet(QString("background-color: qlineargradient( spread:pad, x1:0, y1:0, x2:1, y2:0,"
-                                              "stop:0 transparent, stop:%1 transparent,"
-                                              "stop:%2 #0000FF, stop:%3 #0000FF,"
-                                              "stop:%4 transparent, stop:1 transparent );")
-                                      .arg(p1-0.001)
-                                      .arg(p1)
-                                      .arg(p2-0.001)
-                                      .arg(p2));
+    areaChange(pStart, pEnd);
 }
 
 void MainWindow::on_pushButtonEnd_clicked()
 {
     pEnd = ui->sliderProgress->value();
-    float p1 = (float)pStart/ui->sliderProgress->maximum();
-    float p2 = (float)pEnd/ui->sliderProgress->maximum();
+    areaChange(pStart,pEnd);
+}
+
+void MainWindow::areaChange(int start, int end)
+{
+    float p1 = (float)start/ui->sliderProgress->maximum();
+    float p2 = (float)end/ui->sliderProgress->maximum();
     ui->sliderProgress->setStyleSheet(QString("background-color: qlineargradient( spread:pad, x1:0, y1:0, x2:1, y2:0,"
                                               "stop:0 transparent, stop:%1 transparent,"
                                               "stop:%2 #0000FF, stop:%3 #0000FF,"
@@ -108,16 +106,23 @@ void MainWindow::on_pushButtonEnd_clicked()
 void MainWindow::on_pushButtonAdd_clicked()
 {
     Clip *clip = new Clip;
+    connect(clip,SIGNAL(areaChange(int,int)),this,SLOT(areaChange(int,int)));
     clip->filename = filename;
+    QDateTime datetime = QDateTime::currentDateTime();    
+    clip->clipname = "clip" + datetime.toString("yyyyMMddhhmmss");
     QTime t(0,0,0);
     t = t.addMSecs(pStart);
     clip->ui->timeEditStart->setTime(t);
     t.setHMS(0,0,0);
     t = t.addMSecs(pEnd);
     clip->ui->timeEditEnd->setTime(t);
+    t.setHMS(0,0,0);
+    t = t.addMSecs(pEnd-pStart);
+    clip->ui->timeEditDuration->setTime(t);
     QListWidgetItem *LWI = new QListWidgetItem(ui->listWidget);
+    LWI->setSizeHint(QSize(500,32));
     ui->listWidget->addItem(LWI);
-    ui->listWidget->setItemWidget(LWI,clip);
+    ui->listWidget->setItemWidget(LWI,clip);    
 }
 
 void MainWindow::on_pushButtonDelete_clicked()

@@ -41,6 +41,9 @@ private slots:
     void stateChange(QMediaPlayer::State state);
     void playClip(QListWidgetItem* item);
 
+public slots:
+    void areaChange(int start, int end);
+
 };
 
 #endif // MAINWINDOW_H
