@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
+    <width>600</width>
     <height>32</height>
    </rect>
   </property>
@@ -45,7 +45,7 @@
       <enum>QDateTimeEdit::HourSection</enum>
      </property>
      <property name="displayFormat">
-      <string>hh:mm:ss</string>
+      <string>hh:mm:ss:zzz</string>
      </property>
     </widget>
    </item>
@@ -62,7 +62,7 @@
       <enum>QDateTimeEdit::HourSection</enum>
      </property>
      <property name="displayFormat">
-      <string>hh:mm:ss</string>
+      <string>hh:mm:ss:zzz</string>
      </property>
     </widget>
    </item>
@@ -84,8 +84,11 @@
      <property name="buttonSymbols">
       <enum>QAbstractSpinBox::NoButtons</enum>
      </property>
+     <property name="currentSection">
+      <enum>QDateTimeEdit::HourSection</enum>
+     </property>
      <property name="displayFormat">
-      <string>hh:mm:ss</string>
+      <string>hh:mm:ss:zzz</string>
      </property>
     </widget>
    </item>

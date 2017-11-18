@@ -81,12 +81,24 @@ void MainWindow::on_pushButtonStart_clicked()
 {
     pStart = ui->sliderProgress->value();
     areaChange(pStart, pEnd);
+    if(ui->listWidget->currentRow() != -1){
+        Clip *clip = (Clip*)(ui->listWidget->itemWidget(ui->listWidget->item(ui->listWidget->currentRow())));
+        QTime t(0,0,0);
+        t = t.addMSecs(pStart);
+        clip->ui->timeEditStart->setTime(t);
+    }
 }
 
 void MainWindow::on_pushButtonEnd_clicked()
 {
     pEnd = ui->sliderProgress->value();
     areaChange(pStart,pEnd);
+    if(ui->listWidget->currentRow() != -1){
+        Clip *clip = (Clip*)(ui->listWidget->itemWidget(ui->listWidget->item(ui->listWidget->currentRow())));
+        QTime t(0,0,0);
+        t = t.addMSecs(pEnd);
+        clip->ui->timeEditEnd->setTime(t);
+    }
 }
 
 void MainWindow::areaChange(int start, int end)
@@ -111,6 +123,10 @@ void MainWindow::on_pushButtonAdd_clicked()
     QDateTime datetime = QDateTime::currentDateTime();    
     clip->clipname = "clip" + datetime.toString("yyyyMMddhhmmss");
     QTime t(0,0,0);
+    t = t.addMSecs(ui->sliderProgress->maximum());
+    clip->ui->timeEditStart->setMaximumTime(t);
+    clip->ui->timeEditEnd->setMaximumTime(t);
+    t.setHMS(0,0,0);
     t = t.addMSecs(pStart);
     clip->ui->timeEditStart->setTime(t);
     t.setHMS(0,0,0);
