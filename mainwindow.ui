@@ -65,8 +65,14 @@
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
+          <property name="toolTip">
+           <string>播放 Space</string>
+          </property>
           <property name="text">
            <string/>
+          </property>
+          <property name="icon">
+           <iconset theme="media-playback-start"/>
           </property>
           <property name="iconSize">
            <size>
@@ -97,8 +103,14 @@
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
+          <property name="toolTip">
+           <string>起点</string>
+          </property>
           <property name="text">
            <string/>
+          </property>
+          <property name="icon">
+           <iconset theme="media-skip-backward"/>
           </property>
           <property name="iconSize">
            <size>
@@ -116,8 +128,14 @@
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
+          <property name="toolTip">
+           <string>终点</string>
+          </property>
           <property name="text">
            <string/>
+          </property>
+          <property name="icon">
+           <iconset theme="media-skip-forward"/>
           </property>
           <property name="iconSize">
            <size>
@@ -135,12 +153,14 @@
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
+          <property name="toolTip">
+           <string>添加</string>
+          </property>
           <property name="text">
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="res.qrc">
-            <normaloff>:/add.png</normaloff>:/add.png</iconset>
+           <iconset theme="list-add"/>
           </property>
           <property name="iconSize">
            <size>
@@ -158,8 +178,14 @@
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
+          <property name="toolTip">
+           <string>删除</string>
+          </property>
           <property name="text">
            <string/>
+          </property>
+          <property name="icon">
+           <iconset theme="window-close"/>
           </property>
           <property name="iconSize">
            <size>
@@ -177,8 +203,14 @@
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
+          <property name="toolTip">
+           <string>打开</string>
+          </property>
           <property name="text">
            <string/>
+          </property>
+          <property name="icon">
+           <iconset theme="folder"/>
           </property>
           <property name="iconSize">
            <size>
@@ -193,6 +225,9 @@
         </item>
         <item>
          <widget class="QLabel" name="labelTimeNow">
+          <property name="toolTip">
+           <string>当前时间</string>
+          </property>
           <property name="text">
            <string>00:00:00</string>
           </property>
@@ -207,6 +242,9 @@
         </item>
         <item>
          <widget class="QLabel" name="labelTimeTotal">
+          <property name="toolTip">
+           <string>总时长</string>
+          </property>
           <property name="text">
            <string>00:00:00</string>
           </property>
@@ -240,7 +278,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>24</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -261,6 +299,9 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_open">
+   <property name="icon">
+    <iconset theme="document-open"/>
+   </property>
    <property name="text">
     <string>打开</string>
    </property>
@@ -269,6 +310,9 @@
    </property>
   </action>
   <action name="action_quit">
+   <property name="icon">
+    <iconset theme="application-exit"/>
+   </property>
    <property name="text">
     <string>退出</string>
    </property>
@@ -277,6 +321,9 @@
    </property>
   </action>
   <action name="action_about">
+   <property name="icon">
+    <iconset theme="help"/>
+   </property>
    <property name="text">
     <string>关于</string>
    </property>

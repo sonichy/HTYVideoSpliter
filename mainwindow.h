@@ -22,8 +22,8 @@ private:
     Ui::MainWindow *ui;
     QMediaPlayer *player;
     QVideoWidget *video;
-    QString filename;
-    qint64 pStart,pEnd;
+    QString filepath, intraPath;
+    qint64 pStart, pEnd;
 
 private slots:
     void on_action_open_triggered();
@@ -40,9 +40,12 @@ private slots:
     void setMPPosition();
     void stateChange(QMediaPlayer::State state);
     void playClip(QListWidgetItem* item);
+    void seekBackward();
+    void seekForward();
+    void areaChange(qint64 start, qint64 end);
 
 public slots:
-    void areaChange(int start, int end);
+
 
 };
 

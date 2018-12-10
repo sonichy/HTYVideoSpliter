@@ -16,7 +16,7 @@ public:
     explicit Clip(QWidget *parent = 0);
     ~Clip();
     Ui::Clip *ui;
-    QString filename, clipname;
+    QString filepath, clipname;
 
 private:
     QProcess *process;

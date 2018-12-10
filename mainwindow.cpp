@@ -13,16 +13,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    filename = "";
+    filepath = ".";
     ui->setupUi(this);
     move((QApplication::desktop()->width() - width())/2, (QApplication::desktop()->height() - height())/2);
-    ui->action_open->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
-    ui->action_quit->setIcon(style()->standardIcon(QStyle::SP_DialogCloseButton));
-    ui->pushButtonPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));    
-    ui->pushButtonStart->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
-    ui->pushButtonEnd->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
-    ui->pushButtonDelete->setIcon(style()->standardIcon(QStyle::SP_DialogCloseButton));
-    ui->pushButtonDirectory->setIcon(style()->standardIcon(QStyle::SP_DirIcon));
 
     video = new QVideoWidget;
     video->setStyleSheet("background:black;");
@@ -30,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     video->setMouseTracking(true);
     video->show();
     player = new QMediaPlayer;
-    player->setVolume(100);
+    //player->setVolume(100);
     player->setVideoOutput(video);
     connect(player,SIGNAL(durationChanged(qint64)),this,SLOT(durationChange(qint64)));
     connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(positionChange(qint64)));
@@ -38,6 +31,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->sliderProgress,SIGNAL(valueChanged(int)),this,SLOT(setSTime(int)));
     connect(ui->sliderProgress,SIGNAL(sliderReleased()),this,SLOT(setMPPosition()));
     connect(new QShortcut(QKeySequence(Qt::Key_Space),this), SIGNAL(activated()),this, SLOT(on_pushButtonPlay_clicked()));
+    connect(new QShortcut(QKeySequence(Qt::Key_Left),this), SIGNAL(activated()),this, SLOT(seekBackward()));
+    connect(new QShortcut(QKeySequence(Qt::Key_Right),this), SIGNAL(activated()),this, SLOT(seekForward()));
     connect(ui->listWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(playClip(QListWidgetItem*)));
 }
 
@@ -48,14 +43,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_action_open_triggered()
 {
-    if(filename==""){
-        filename = QFileDialog::getOpenFileName(this, "打开媒体文件", ".");
-    }else{
-        filename = QFileDialog::getOpenFileName(this, "打开媒体文件", filename);
-    }
-    if(!filename.isEmpty()){        
-        player->setMedia(QUrl::fromLocalFile(filename));
-        ui->statusBar->showMessage("打开 " + filename);
+    //if(filepath == "") filepath = ".";
+    filepath = QFileDialog::getOpenFileName(this, "打开媒体文件", filepath);
+    if(!filepath.isEmpty()){
+        player->setMedia(QUrl::fromLocalFile(filepath));
+        ui->statusBar->showMessage("打开 " + filepath);
         ui->sliderProgress->setStyleSheet("");
         ui->listWidget->clear();
     }
@@ -63,8 +55,8 @@ void MainWindow::on_action_open_triggered()
 
 void MainWindow::on_action_about_triggered()
 {
-    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰视频分割器 1.0\n一款基于 Qt 和 FFmpeg 的视频分割器。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt");
-    aboutMB.setIconPixmap(QPixmap(":/icon.jpg").scaled(100,100));
+    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰视频分割器 1.0\n一款基于 Qt 和 FFmpeg 的视频分割器。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：https://www.github.com/sonichy");
+    aboutMB.setIconPixmap(QPixmap(":/icon.jpg").scaled(150,150));
     aboutMB.exec();
 }
 
@@ -92,7 +84,7 @@ void MainWindow::on_pushButtonStart_clicked()
 void MainWindow::on_pushButtonEnd_clicked()
 {
     pEnd = ui->sliderProgress->value();
-    areaChange(pStart,pEnd);
+    areaChange(pStart, pEnd);
     if(ui->listWidget->currentRow() != -1){
         Clip *clip = (Clip*)(ui->listWidget->itemWidget(ui->listWidget->item(ui->listWidget->currentRow())));
         QTime t(0,0,0);
@@ -101,14 +93,14 @@ void MainWindow::on_pushButtonEnd_clicked()
     }
 }
 
-void MainWindow::areaChange(int start, int end)
+void MainWindow::areaChange(qint64 start, qint64 end)
 {
     float p1 = (float)start/ui->sliderProgress->maximum();
     float p2 = (float)end/ui->sliderProgress->maximum();
     ui->sliderProgress->setStyleSheet(QString("background-color: qlineargradient( spread:pad, x1:0, y1:0, x2:1, y2:0,"
-                                              "stop:0 transparent, stop:%1 transparent,"
+                                              "stop:0 #FFFFFF, stop:%1 #FFFFFF,"
                                               "stop:%2 #0000FF, stop:%3 #0000FF,"
-                                              "stop:%4 transparent, stop:1 transparent );")
+                                              "stop:%4 #FFFFFF, stop:1 #FFFFFF );")
                                       .arg(p1-0.001)
                                       .arg(p1)
                                       .arg(p2-0.001)
@@ -119,8 +111,8 @@ void MainWindow::on_pushButtonAdd_clicked()
 {
     Clip *clip = new Clip;
     connect(clip,SIGNAL(areaChange(int,int)),this,SLOT(areaChange(int,int)));
-    clip->filename = filename;
-    QDateTime datetime = QDateTime::currentDateTime();    
+    clip->filepath = filepath;
+    QDateTime datetime = QDateTime::currentDateTime();
     clip->clipname = "clip" + datetime.toString("yyyyMMddhhmmss");
     QTime t(0,0,0);
     t = t.addMSecs(ui->sliderProgress->maximum());
@@ -133,12 +125,12 @@ void MainWindow::on_pushButtonAdd_clicked()
     t = t.addMSecs(pEnd);
     clip->ui->timeEditEnd->setTime(t);
     t.setHMS(0,0,0);
-    t = t.addMSecs(pEnd-pStart);
+    t = t.addMSecs(pEnd - pStart);
     clip->ui->timeEditDuration->setTime(t);
     QListWidgetItem *LWI = new QListWidgetItem(ui->listWidget);
     LWI->setSizeHint(QSize(500,32));
     ui->listWidget->addItem(LWI);
-    ui->listWidget->setItemWidget(LWI,clip);    
+    ui->listWidget->setItemWidget(LWI,clip);
 }
 
 void MainWindow::on_pushButtonDelete_clicked()
@@ -151,8 +143,8 @@ void MainWindow::on_pushButtonDelete_clicked()
 
 void MainWindow::on_pushButtonDirectory_clicked()
 {
-    if(filename != ""){
-        QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(filename).absolutePath()));
+    if(filepath != ""){
+        QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(filepath).absolutePath()));
     }
 }
 
@@ -170,7 +162,8 @@ void MainWindow::durationChange(qint64 d)
 void MainWindow::positionChange(qint64 p)
 {
     ui->sliderProgress->setValue(p);
-    if(p > pEnd) player->pause();
+    //qDebug() << p << pEnd;
+    //if (p > pEnd) player->pause(); // 崩溃
 }
 
 void MainWindow::setSTime(int v)
@@ -190,11 +183,14 @@ void MainWindow::stateChange(QMediaPlayer::State state)
 {
     //qDebug() << state;
     if(state == QMediaPlayer::PlayingState){
-        ui->pushButtonPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+        ui->pushButtonPlay->setIcon(QIcon::fromTheme("media-playback-pause"));
+        ui->pushButtonPlay->setToolTip("暂停 Space");
     }else if(state == QMediaPlayer::PausedState){
-        ui->pushButtonPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+        ui->pushButtonPlay->setIcon(QIcon::fromTheme("media-playback-start"));
+        ui->pushButtonPlay->setToolTip("播放 Space");
     }else if(state == QMediaPlayer::StoppedState){
-        ui->pushButtonPlay->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+        ui->pushButtonPlay->setIcon(QIcon::fromTheme("media-playback-start"));
+        ui->pushButtonPlay->setToolTip("播放 Space");
     }
 }
 
@@ -207,3 +203,12 @@ void MainWindow::playClip(QListWidgetItem* item)
     player->play();
 }
 
+void MainWindow::seekBackward()
+{
+    player->setPosition(player->position() - 5000);
+}
+
+void MainWindow::seekForward()
+{
+    player->setPosition(player->position() + 5000);
+}
