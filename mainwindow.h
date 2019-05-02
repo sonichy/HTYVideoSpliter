@@ -18,12 +18,17 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+protected:
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
+
 private:
     Ui::MainWindow *ui;
     QMediaPlayer *player;
     QVideoWidget *video;
     QString filepath, intraPath;
     qint64 pStart, pEnd;
+    void open(QString path);
 
 private slots:
     void on_action_open_triggered();
@@ -39,13 +44,10 @@ private slots:
     void setSTime(int v);
     void setMPPosition();
     void stateChange(QMediaPlayer::State state);
-    void playClip(QListWidgetItem* item);
+    void playClip(QListWidgetItem *item);
     void seekBackward();
     void seekForward();
-    void areaChange(qint64 start, qint64 end);
-
-public slots:
-
+    void areaChange(int start, int end);
 
 };
 

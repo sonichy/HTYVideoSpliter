@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0,0,0">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0,0,0,0">
    <property name="spacing">
     <number>5</number>
    </property>
@@ -89,6 +89,16 @@
      </property>
      <property name="displayFormat">
       <string>hh:mm:ss:zzz</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="checkBox_intra">
+     <property name="toolTip">
+      <string>解决视频黑屏问题，体积会增大。</string>
+     </property>
+     <property name="text">
+      <string>帧内转码</string>
      </property>
     </widget>
    </item>

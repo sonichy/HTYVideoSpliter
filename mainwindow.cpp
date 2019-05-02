@@ -8,6 +8,8 @@
 #include <QMessageBox>
 #include <QShortcut>
 #include <QDesktopServices>
+#include <QDragEnterEvent>
+#include <QMimeData>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -23,17 +25,17 @@ MainWindow::MainWindow(QWidget *parent) :
     video->setMouseTracking(true);
     video->show();
     player = new QMediaPlayer;
-    //player->setVolume(100);
+    player->setVolume(100);
     player->setVideoOutput(video);
-    connect(player,SIGNAL(durationChanged(qint64)),this,SLOT(durationChange(qint64)));
-    connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(positionChange(qint64)));
-    connect(player,SIGNAL(stateChanged(QMediaPlayer::State)),SLOT(stateChange(QMediaPlayer::State)));
-    connect(ui->sliderProgress,SIGNAL(valueChanged(int)),this,SLOT(setSTime(int)));
-    connect(ui->sliderProgress,SIGNAL(sliderReleased()),this,SLOT(setMPPosition()));
-    connect(new QShortcut(QKeySequence(Qt::Key_Space),this), SIGNAL(activated()),this, SLOT(on_pushButtonPlay_clicked()));
-    connect(new QShortcut(QKeySequence(Qt::Key_Left),this), SIGNAL(activated()),this, SLOT(seekBackward()));
-    connect(new QShortcut(QKeySequence(Qt::Key_Right),this), SIGNAL(activated()),this, SLOT(seekForward()));
-    connect(ui->listWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(playClip(QListWidgetItem*)));
+    connect(player, SIGNAL(durationChanged(qint64)), this, SLOT(durationChange(qint64)));
+    connect(player, SIGNAL(positionChanged(qint64)), this, SLOT(positionChange(qint64)));
+    connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(stateChange(QMediaPlayer::State)));
+    connect(ui->sliderProgress, SIGNAL(valueChanged(int)),this, SLOT(setSTime(int)));
+    connect(ui->sliderProgress, SIGNAL(sliderReleased()),this, SLOT(setMPPosition()));
+    connect(new QShortcut(QKeySequence(Qt::Key_Space), this), SIGNAL(activated()), this, SLOT(on_pushButtonPlay_clicked()));
+    connect(new QShortcut(QKeySequence(Qt::Key_Left), this), SIGNAL(activated()), this, SLOT(seekBackward()));
+    connect(new QShortcut(QKeySequence(Qt::Key_Right), this), SIGNAL(activated()), this, SLOT(seekForward()));
+    connect(ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(playClip(QListWidgetItem*)));
 }
 
 MainWindow::~MainWindow()
@@ -41,15 +43,21 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::open(QString path)
+{
+    filepath = path;
+    player->setMedia(QUrl::fromLocalFile(path));
+    ui->statusBar->showMessage("打开 " + path);
+    ui->sliderProgress->setStyleSheet("");
+    ui->listWidget->clear();
+}
+
 void MainWindow::on_action_open_triggered()
 {
     //if(filepath == "") filepath = ".";
     filepath = QFileDialog::getOpenFileName(this, "打开媒体文件", filepath);
     if(!filepath.isEmpty()){
-        player->setMedia(QUrl::fromLocalFile(filepath));
-        ui->statusBar->showMessage("打开 " + filepath);
-        ui->sliderProgress->setStyleSheet("");
-        ui->listWidget->clear();
+        open(filepath);
     }
 }
 
@@ -93,7 +101,7 @@ void MainWindow::on_pushButtonEnd_clicked()
     }
 }
 
-void MainWindow::areaChange(qint64 start, qint64 end)
+void MainWindow::areaChange(int start, int end)
 {
     float p1 = (float)start/ui->sliderProgress->maximum();
     float p2 = (float)end/ui->sliderProgress->maximum();
@@ -110,7 +118,7 @@ void MainWindow::areaChange(qint64 start, qint64 end)
 void MainWindow::on_pushButtonAdd_clicked()
 {
     Clip *clip = new Clip;
-    connect(clip,SIGNAL(areaChange(int,int)),this,SLOT(areaChange(int,int)));
+    connect(clip, SIGNAL(areaChange(int,int)), this, SLOT(areaChange(int,int)));
     clip->filepath = filepath;
     QDateTime datetime = QDateTime::currentDateTime();
     clip->clipname = "clip" + datetime.toString("yyyyMMddhhmmss");
@@ -211,4 +219,29 @@ void MainWindow::seekBackward()
 void MainWindow::seekForward()
 {
     player->setPosition(player->position() + 5000);
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *e)
+{
+    //if(e->mimeData()->hasFormat("text/uri-list")) //只能打开文本文件
+        e->acceptProposedAction(); //可以在这个窗口部件上拖放对象
+}
+
+void MainWindow::dropEvent(QDropEvent *e) //释放对方时，执行的操作
+{
+    QList<QUrl> urls = e->mimeData()->urls();
+    if(urls.isEmpty())
+        return ;
+
+    QString fileName = urls.first().toLocalFile();
+
+//    foreach (QUrl u, urls) {
+//        qDebug() << u.toString();
+//    }
+//    qDebug() << urls.size();
+
+    if(fileName.isEmpty())
+        return;
+
+    open(fileName);
 }

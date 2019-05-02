@@ -10,6 +10,9 @@
     <height>600</height>
    </rect>
   </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
    <string>海天鹰视频分割器</string>
   </property>
@@ -72,7 +75,8 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset theme="media-playback-start"/>
+           <iconset theme="media-playback-start">
+            <normaloff>.</normaloff>.</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -110,7 +114,8 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset theme="media-skip-backward"/>
+           <iconset theme="media-skip-backward">
+            <normaloff>.</normaloff>.</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -135,7 +140,8 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset theme="media-skip-forward"/>
+           <iconset theme="media-skip-forward">
+            <normaloff>.</normaloff>.</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -160,7 +166,8 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset theme="list-add"/>
+           <iconset theme="list-add">
+            <normaloff>.</normaloff>.</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -185,7 +192,8 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset theme="window-close"/>
+           <iconset theme="window-close">
+            <normaloff>.</normaloff>.</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -210,7 +218,8 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset theme="folder"/>
+           <iconset theme="folder">
+            <normaloff>.</normaloff>.</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -278,7 +287,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -300,7 +309,8 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_open">
    <property name="icon">
-    <iconset theme="document-open"/>
+    <iconset theme="document-open">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>打开</string>
@@ -311,7 +321,8 @@
   </action>
   <action name="action_quit">
    <property name="icon">
-    <iconset theme="application-exit"/>
+    <iconset theme="application-exit">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>退出</string>
@@ -322,7 +333,8 @@
   </action>
   <action name="action_about">
    <property name="icon">
-    <iconset theme="help"/>
+    <iconset theme="help">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>关于</string>
